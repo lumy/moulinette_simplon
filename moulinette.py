@@ -41,8 +41,10 @@ def prepare_context(to_imp, root_student_folder):
   return module_exam, module_name
 
 def unload_context(to_imp, module_exam):
+  #print(sys.modules)
   try:
     del sys.modules[to_imp[0]]
+    del sys.modules[to_imp[0].split('.')[0]]
   except KeyError:
     pass
   #del sys.modules[str(module_exam.__name__)]
@@ -67,7 +69,7 @@ def correction(list_to_imp, root_students_folder):
         max, score = run_unittest(module_exam, module_name)
         msg = "%s Score %s/%s" % (msg, score, max)
       else:
-        msg += " could not be loaded at path %s" % to_imp[2]
+        msg += " could not be loaded at path %s. Score: 0" % to_imp[2]
       print(msg)
       unload_context(to_imp, module_exam)
 
