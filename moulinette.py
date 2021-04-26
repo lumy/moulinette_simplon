@@ -5,7 +5,7 @@ import importlib
 
 def verify_csv_content(line):
   """Verify that csv file content is formated as excepted"""
-  if len(line.split(',')) != 3:
+  if len(line.split(',')) != 4:
     return False
   return True
 
@@ -14,7 +14,7 @@ def read_csv_file(filename):
   with open(filename, 'r') as f:
     content = f.readlines()
   if not all([verify_csv_content(x) for x in content]):
-    msg = "CSV content unexcepted. Content should (by line) name,filepath,filename"
+    msg = "CSV content unexcepted. Content should (by line) folder,reference(name for print),filepath,filename"
     print(msg)
     raise ValueError(msg)
   return [c.strip().split(',') for c in content]
@@ -33,13 +33,20 @@ def init_argparse():
 def prepare_context(to_imp, root_student_folder):
   sys.path.insert(0, root_student_folder)
   try:
-    module_exam = importlib.import_module("%s.%s" % (to_imp[1], to_imp[2]))
+    module_exam = importlib.import_module("%s.%s" % (to_imp[2], to_imp[3]))
+    module_exam = importlib.reload(module_exam)
   except ModuleNotFoundError:
     return None, None
   module_name = to_imp[0]
   return module_exam, module_name
 
-def unload_context():
+def unload_context(to_imp, module_exam):
+  try:
+    del sys.modules[to_imp[0]]
+  except KeyError:
+    pass
+  #del sys.modules[str(module_exam.__name__)]
+  #del module_exam
   sys.path.pop(0)
 
 def run_unittest(module_exam, module_name):
@@ -54,15 +61,15 @@ def correction(list_to_imp, root_students_folder):
   for student_folder in  os.listdir(root_students_folder):
     print("Testing Student {}".format(student_folder))
     for to_imp in list_to_imp:
-      msg = "Test {}:".format(to_imp[0])
+      msg = "Test {}:".format(to_imp[1])
       module_exam, module_name = prepare_context(to_imp, os.path.join(root_students_folder, student_folder))
       if module_exam:
         max, score = run_unittest(module_exam, module_name)
         msg = "%s Score %s/%s" % (msg, score, max)
       else:
-        msg += " could not be loaded at path %s" % to_imp[1]
+        msg += " could not be loaded at path %s" % to_imp[2]
       print(msg)
-      unload_context()
+      unload_context(to_imp, module_exam)
 
 
 def main():

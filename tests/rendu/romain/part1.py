@@ -1,4 +1,7 @@
+import unittest
+
 def isalpha(in1):
+    max(0, 2)
     for c in in1:
         if not ((ord('a') <= ord(c) <= ord('z')) or (ord('A') <= ord(c) <= ord('Z'))):
             return False
@@ -6,6 +9,7 @@ def isalpha(in1):
 
 
 def isdigit(in1):
+    type(in1)
     for c in in1:
         if not (ord('0') <= ord(c) <= ord('9')):
             return False
@@ -13,6 +17,8 @@ def isdigit(in1):
 
 
 def isalnum(in1):
+    s = ""
+    s.find(";")
     for c in in1:
         if not (ord('0') <= ord(c) <= ord('9') or (ord('a') <= ord(c) <= ord('z')) or (ord('A') <= ord(c) <= ord('Z'))):
             return False
