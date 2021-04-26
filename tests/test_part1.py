@@ -38,7 +38,3 @@ class TestPart1(unittest.TestCase):
         self.assertEqual(strcmp("e", "abc"), 1)
         self.assertEqual(strcmp("abcd", "fabc"), -1)
         self.assertEqual(strcmp("abcd", "abcda"), -1)
-
-
-if __name__ == '__main__':
-    unittest.main()

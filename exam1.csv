@@ -1,2 +1,5 @@
-part1,test_part1
-part2,test_part2
+part1,tests,test_part1
+part1_bonus,tests,test_bonus_part1
+part2,tests,test_part2
+part3,tests,test_part3
+part4,tests,test_part4
