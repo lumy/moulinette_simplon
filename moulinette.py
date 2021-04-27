@@ -5,7 +5,7 @@ import importlib
 
 def verify_csv_content(line):
   """Verify that csv file content is formated as excepted"""
-  if len(line.split(',')) != 4:
+  if len(line.split(',')) != 3:
     return False
   return True
 
@@ -31,24 +31,25 @@ def init_argparse():
   return parser
 
 def prepare_context(to_imp, root_student_folder):
+  """Return None,None in case of error otherwhise loaded module and it's name"""
   sys.path.insert(0, root_student_folder)
   try:
-    module_exam = importlib.import_module("%s.%s" % (to_imp[2], to_imp[3]))
+    module_exam = importlib.import_module("%s.%s" % (to_imp[1], to_imp[2]))
     module_exam = importlib.reload(module_exam)
   except ModuleNotFoundError:
+    return None, None
+  except ImportError:
     return None, None
   module_name = to_imp[0]
   return module_exam, module_name
 
 def unload_context(to_imp, module_exam):
-  #print(sys.modules)
+  """Delete module for sys.module and remove path"""
   try:
-    del sys.modules[to_imp[0]]
-    del sys.modules[to_imp[0].split('.')[0]]
-  except KeyError:
+      del sys.modules[to_imp[0]]
+      del sys.modules["%s.%s" % (to_imp[1], to_imp[2])]
+  except:
     pass
-  #del sys.modules[str(module_exam.__name__)]
-  #del module_exam
   sys.path.pop(0)
 
 def run_unittest(module_exam, module_name):
@@ -57,19 +58,18 @@ def run_unittest(module_exam, module_name):
   score = result.testsRun - len(result.errors) - len(result.failures)
   return (result.testsRun, score)
 
-
 def correction(list_to_imp, root_students_folder):
   """For each student apply list_to_imp"""
   for student_folder in  os.listdir(root_students_folder):
     print("Testing Student {}".format(student_folder))
     for to_imp in list_to_imp:
-      msg = "Test {}:".format(to_imp[1])
+      msg = "Test {}:".format(to_imp[0])
       module_exam, module_name = prepare_context(to_imp, os.path.join(root_students_folder, student_folder))
       if module_exam:
         max, score = run_unittest(module_exam, module_name)
         msg = "%s Score %s/%s" % (msg, score, max)
       else:
-        msg += " could not be loaded at path %s. Score: 0" % to_imp[2]
+        msg += " could not be loaded at path %s. Score: 0" % to_imp[1]
       print(msg)
       unload_context(to_imp, module_exam)
 
