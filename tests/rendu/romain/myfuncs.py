@@ -5,7 +5,7 @@ def isalpha(in1):
     for c in in1:
         if not ((ord('a') <= ord(c) <= ord('z')) or (ord('A') <= ord(c) <= ord('Z'))):
             return False
-    return True
+    return False
 
 
 def isdigit(in1):

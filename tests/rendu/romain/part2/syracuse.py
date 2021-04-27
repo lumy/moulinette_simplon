@@ -1,0 +1,3 @@
+
+def syracuse(integer):
+  return []
